@@ -101,3 +101,9 @@ function createImageGallery(images) {
 createImageGallery(images);
 
 const galleryLink = document.querySelectorAll('.gallery-link');
+
+galleryList.addEventListener('click', event => {
+  event.preventDefault();
+
+  console.log(event.target.dataset['source']);
+});

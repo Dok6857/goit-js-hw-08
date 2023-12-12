@@ -105,5 +105,12 @@ const galleryLink = document.querySelectorAll('.gallery-link');
 galleryList.addEventListener('click', event => {
   event.preventDefault();
 
+  const instance = basicLightbox.create(`
+    <img src=${event.target.dataset['source']} width="1112" height="640">
+`);
+  instance.show();
+
   console.log(event.target.dataset['source']);
+
+  event.stopPropagation();
 });

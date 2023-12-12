@@ -66,18 +66,8 @@ const images = [
   },
 ];
 
-// <li class="gallery-item">
-//   <a class="gallery-link" href="large-image.jpg">
-//     <img
-//       class="gallery-image"
-//       src="small-image.jpg"
-//       data-source="large-image.jpg"
-//       alt="Image description"
-//     />
-//   </a>
-// </li>;
-
 const galleryList = document.querySelector('.gallery');
+let lightboxInstance = null;
 
 function createImageGallery(images) {
   const galleryHTML = images.reduce((html, image) => {
@@ -100,17 +90,28 @@ function createImageGallery(images) {
 
 createImageGallery(images);
 
-const galleryLink = document.querySelectorAll('.gallery-link');
-
 galleryList.addEventListener('click', event => {
   event.preventDefault();
+
+  const clickedImage = event.target.closest('.gallery-image');
+  if (!clickedImage) {
+    return;
+  }
 
   const instance = basicLightbox.create(`
     <img src=${event.target.dataset['source']} width="1112" height="640">
 `);
   instance.show();
 
+  lightboxInstance = instance;
   console.log(event.target.dataset['source']);
 
   event.stopPropagation();
+});
+
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && lightboxInstance) {
+    lightboxInstance.close();
+    lightboxInstance = null;
+  }
 });

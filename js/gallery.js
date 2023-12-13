@@ -70,22 +70,29 @@ const galleryList = document.querySelector('.gallery');
 let lightboxInstance = null;
 
 function createImageGallery(images) {
-  const galleryHTML = images.reduce((html, image) => {
-    return (
-      html +
-      `<li class="gallery-item">
-  <a class="gallery-link" href="${image.original}">
-    <img
-      class="gallery-image"
-      src="${image.preview}"
-      data-source="${image.original}"
-      alt="${image.description}"
-    />
-  </a>
-</li>`
-    );
-  }, '');
-  galleryList.innerHTML = galleryHTML;
+  const fragment = document.createDocumentFragment();
+
+  images.forEach(image => {
+    const listItem = document.createElement('li');
+    listItem.classList.add('gallery-item');
+
+    const link = document.createElement('a');
+    link.classList.add('gallery-link');
+    link.href = image.original;
+
+    const img = document.createElement('img');
+    img.classList.add('gallery-image');
+    img.src = image.preview;
+    img.setAttribute('data-source', image.original);
+    img.alt = image.description;
+
+    link.appendChild(img);
+    listItem.appendChild(link);
+    fragment.appendChild(listItem);
+  });
+
+  galleryList.innerHTML = '';
+  galleryList.appendChild(fragment);
 }
 
 createImageGallery(images);
@@ -98,20 +105,30 @@ galleryList.addEventListener('click', event => {
     return;
   }
 
-  const instance = basicLightbox.create(`
+  const instance = basicLightbox.create(
+    `
     <img src=${event.target.dataset['source']} width="1112" height="640">
-`);
+  `,
+    {
+      onShow: () => {
+        window.addEventListener('keydown', handleKeyDown);
+      },
+      onClose: () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      },
+    }
+  );
+
   instance.show();
 
   lightboxInstance = instance;
-  console.log(event.target.dataset['source']);
+
+  function handleKeyDown(event) {
+    if (event.key === 'Escape' && lightboxInstance) {
+      lightboxInstance.close();
+      lightboxInstance = null;
+    }
+  }
 
   event.stopPropagation();
-});
-
-window.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && lightboxInstance) {
-    lightboxInstance.close();
-    lightboxInstance = null;
-  }
 });

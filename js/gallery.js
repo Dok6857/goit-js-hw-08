@@ -129,6 +129,4 @@ galleryList.addEventListener('click', event => {
       lightboxInstance = null;
     }
   }
-
-  event.stopPropagation();
 });
